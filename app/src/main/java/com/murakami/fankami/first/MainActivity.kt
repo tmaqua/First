@@ -8,20 +8,32 @@ import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.Menu
 import android.view.MenuItem
+import com.murakami.fankami.first.model.Article
+import com.murakami.fankami.first.model.User
+import com.murakami.fankami.first.view.ArticleView
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        val toolbar = findViewById(R.id.toolbar) as Toolbar
-        setSupportActionBar(toolbar)
 
-        val fab = findViewById(R.id.fab) as FloatingActionButton
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
+        var articleView = ArticleView(applicationContext)
+        var user = User(id = "1", name = "murakami", profileImageUrl = "www.gakufes.jp")
+        var article = Article(id = "100", title = "Article", url = "dev.gakufes.jp", user = user)
+
+        articleView.setArticle(article)
+
+        setContentView(articleView)
+
+//        setContentView(R.layout.activity_main)
+//        val toolbar = findViewById(R.id.toolbar) as Toolbar
+//        setSupportActionBar(toolbar)
+//
+//        val fab = findViewById(R.id.fab) as FloatingActionButton
+//        fab.setOnClickListener { view ->
+//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                    .setAction("Action", null).show()
+//        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

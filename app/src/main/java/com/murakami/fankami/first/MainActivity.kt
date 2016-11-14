@@ -16,6 +16,10 @@ class MainActivity : AppCompatActivity() {
         listAdapter.articles = dummyList()
         val listView: ListView = findViewById(R.id.listView) as ListView
         listView.adapter = listAdapter
+        listView.setOnItemClickListener { adapterView, view, position, id ->
+            val article = listAdapter.articles[position]
+            ArticleActivity.intent(this, article).let { startActivity(it) }
+        }
     }
 
     private fun dummyArticle(title: String, userName: String): Article =

@@ -2,6 +2,7 @@ package com.murakami.fankami.first
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
@@ -26,15 +27,15 @@ class MainActivity : RxAppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val listAdapter = ArticleListAdapter(applicationContext)
+        val progressBar = findViewById(R.id.progressBar)
         val listView: ListView = findViewById(R.id.listView) as ListView
         val queryEditText = findViewById(R.id.queryEditText) as EditText
         val searchButton = findViewById(R.id.searchButton) as Button
 
-        listAdapter.articles = dummyList()
         listView.adapter = listAdapter
         listView.setOnItemClickListener { adapterView, view, position, id ->
-            val article = listAdapter.articles[position]
-            ArticleActivity.intent(this, article).let { startActivity(it) }
+            val intent = ArticleActivity.intent(this, listAdapter.articles[position])
+            startActivity(intent)
         }
 
         val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
@@ -46,9 +47,14 @@ class MainActivity : RxAppCompatActivity() {
         val articleClient = retrofit.create(ArticleClient::class.java)
 
         searchButton.setOnClickListener {
+            progressBar.visibility = View.VISIBLE
+
             articleClient.search(queryEditText.text.toString())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
+                    .doAfterTerminate {
+                        progressBar.visibility = View.GONE
+                    }
                     .bindToLifecycle(this)
                     .subscribe({
                         queryEditText.text.clear()
@@ -61,12 +67,12 @@ class MainActivity : RxAppCompatActivity() {
         }
     }
 
-    private fun dummyArticle(title: String, userName: String): Article =
-            Article(id = "1",
-                    title = title,
-                    url = "www.gakufes.jp",
-                    user = User(id = "100", name = userName, profileImageUrl = ""))
-
-    private fun dummyList(): List<Article> =
-        listOf<Article>( dummyArticle("a", "A"), dummyArticle("b", "B") )
+//    private fun dummyArticle(title: String, userName: String): Article =
+//            Article(id = "1",
+//                    title = title,
+//                    url = "www.gakufes.jp",
+//                    user = User(id = "100", name = userName, profileImageUrl = ""))
+//
+//    private fun dummyList(): List<Article> =
+//        listOf<Article>( dummyArticle("a", "A"), dummyArticle("b", "B") )
 }
